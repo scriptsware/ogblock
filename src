@@ -1,0 +1,28 @@
+-- OG Lucky Block + Rarity Renamer (Client-side)
+
+-- Function to update text labels/buttons
+local function updateText(obj)
+    if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+        -- Change "Secret" rarity to "OG"
+        if string.find(obj.Text, "Secret") then
+            obj.Text = obj.Text:gsub("Secret", "OG")
+            obj.TextColor3 = Color3.fromRGB(255, 215, 0) -- gold color
+        end
+
+        -- Rename Lucky Block to OG Lucky Block
+        if obj.Text == "Lucky Block" then
+            obj.Text = "OG Lucky Block"
+            obj.TextColor3 = Color3.fromRGB(255, 255, 255) -- white color
+        end
+    end
+end
+
+-- Scan existing UI
+for _, v in pairs(game:GetDescendants()) do
+    updateText(v)
+end
+
+-- Update future UI elements
+game.DescendantAdded:Connect(function(v)
+    updateText(v)
+end)
