@@ -1,28 +1,161 @@
--- OG Lucky Block + Rarity Renamer (Client-side)
+local player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
 
--- Function to update text labels/buttons
-local function updateText(obj)
-    if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-        -- Change "Secret" rarity to "OG"
-        if string.find(obj.Text, "Secret") then
-            obj.Text = obj.Text:gsub("Secret", "OG")
-            obj.TextColor3 = Color3.fromRGB(255, 215, 0) -- gold color
-        end
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
-        -- Rename Lucky Block to OG Lucky Block
-        if obj.Text == "Lucky Block" then
-            obj.Text = "OG Lucky Block"
-            obj.TextColor3 = Color3.fromRGB(255, 255, 255) -- white color
-        end
-    end
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,250,0,130)
+frame.Position = UDim2.new(0.5,-125,0.5,-65)
+frame.BackgroundTransparency = 0.4
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0,8)
+corner.Parent = frame
+
+-- Close Button (Red X)
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0,18,0,18)
+close.Position = UDim2.new(1,-22,0,4)
+close.BackgroundTransparency = 1
+close.Text = "X"
+close.TextColor3 = Color3.fromRGB(255,70,70)
+close.Font = Enum.Font.GothamBold
+close.TextSize = 14
+close.Parent = frame
+
+close.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,25)
+title.BackgroundTransparency = 1
+title.Text = "OG Rarity Visual"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 14
+title.Parent = frame
+
+-- Subtext
+local desc = Instance.new("TextLabel")
+desc.Size = UDim2.new(1,0,0,20)
+desc.Position = UDim2.new(0,0,0,25)
+desc.BackgroundTransparency = 1
+desc.Text = "Changes rarities to OG"
+desc.TextColor3 = Color3.fromRGB(200,200,200)
+desc.Font = Enum.Font.Gotham
+desc.TextSize = 12
+desc.Parent = frame
+
+-- Bottom Version Text
+local version = Instance.new("TextLabel")
+version.Size = UDim2.new(1,0,0,12)
+version.Position = UDim2.new(0,0,1,-12)
+version.BackgroundTransparency = 1
+version.Text = "UPDATED | Version 2.04"
+version.TextColor3 = Color3.fromRGB(150,150,150)
+version.Font = Enum.Font.Gotham
+version.TextSize = 9
+version.Parent = frame
+
+-- Apply Button (lowered)
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.8,0,0,28)
+button.Position = UDim2.new(0.1,0,1,-42)
+button.BackgroundTransparency = 0.3
+button.BackgroundColor3 = Color3.fromRGB(120,200,255)
+button.Text = "Apply Visual"
+button.TextColor3 = Color3.fromRGB(255,255,255)
+button.Font = Enum.Font.GothamBold
+button.TextSize = 13
+button.Parent = frame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0,6)
+btnCorner.Parent = button
+
+
+-- RARITY CHANGE LOGIC
+local function updateTextFunc(obj)
+
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+
+		if string.find(obj.Text,"Secret") then
+			obj.Text = obj.Text:gsub("Secret","OG")
+			obj.TextColor3 = Color3.fromRGB(255,215,0)
+		end
+
+		if obj.Text == "Lucky Block" then
+			obj.Text = "OG Lucky Block"
+			obj.TextColor3 = Color3.fromRGB(255,255,255)
+		end
+
+	end
+
 end
 
--- Scan existing UI
-for _, v in pairs(game:GetDescendants()) do
-    updateText(v)
+
+button.MouseButton1Click:Connect(function()
+
+	for _,v in pairs(game:GetDescendants()) do
+		updateTextFunc(v)
+	end
+
+	game.DescendantAdded:Connect(function(v)
+		updateTextFunc(v)
+	end)
+
+end)
+
+
+-- DRAGGABLE (PC + MOBILE)
+
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	frame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
 end
 
--- Update future UI elements
-game.DescendantAdded:Connect(function(v)
-    updateText(v)
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
 end)
