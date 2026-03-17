@@ -42,7 +42,7 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 14
 title.Parent = frame
 
--- Subtext
+-- Subtext (UNCHANGED)
 local desc = Instance.new("TextLabel")
 desc.Size = UDim2.new(1,0,0,20)
 desc.Position = UDim2.new(0,0,0,25)
@@ -64,7 +64,7 @@ version.Font = Enum.Font.Gotham
 version.TextSize = 9
 version.Parent = frame
 
--- Apply Button (lowered)
+-- Apply Button
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0.8,0,0,28)
 button.Position = UDim2.new(0.1,0,1,-42)
@@ -80,26 +80,27 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0,6)
 btnCorner.Parent = button
 
+-- FIXED RARITY LOGIC (ONLY CHANGE)
+local rarityKeywords = {
+	"Mythic",
+	"Secret",
+	"Brainrot",
+	"Brainrot God"
+}
 
--- RARITY CHANGE LOGIC
 local function updateTextFunc(obj)
-
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-
-		if string.find(obj.Text,"Secret") then
-			obj.Text = obj.Text:gsub("Secret","OG")
-			obj.TextColor3 = Color3.fromRGB(255,215,0)
+		if string.find(obj.Text, "Lucky Block") then
+			for _, rarity in pairs(rarityKeywords) do
+				if string.find(obj.Text, rarity) then
+					obj.TextColor3 = Color3.fromRGB(255,215,0)
+					obj.TextStrokeTransparency = 0
+					obj.TextStrokeColor3 = Color3.fromRGB(0,0,0)
+				end
+			end
 		end
-
-		if obj.Text == "Lucky Block" then
-			obj.Text = "OG Lucky Block"
-			obj.TextColor3 = Color3.fromRGB(255,255,255)
-		end
-
 	end
-
 end
-
 
 button.MouseButton1Click:Connect(function()
 
@@ -113,8 +114,7 @@ button.MouseButton1Click:Connect(function()
 
 end)
 
-
--- DRAGGABLE (PC + MOBILE)
+-- DRAGGABLE
 
 local dragging = false
 local dragInput
