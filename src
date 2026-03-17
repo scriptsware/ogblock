@@ -80,7 +80,7 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0,6)
 btnCorner.Parent = button
 
--- RARITY + PROMPT LOGIC
+-- FIXED RARITY LOGIC (ONLY CHANGE)
 local rarityKeywords = {
 	"Mythic",
 	"Secret",
@@ -89,7 +89,6 @@ local rarityKeywords = {
 }
 
 local function updateTextFunc(obj)
-	-- UI rarity visual
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
 		if string.find(obj.Text, "Lucky Block") then
 			for _, rarity in pairs(rarityKeywords) do
@@ -101,22 +100,9 @@ local function updateTextFunc(obj)
 			end
 		end
 	end
-
-	-- Proximity Prompt
-	if obj:IsA("ProximityPrompt") then
-		if string.find(obj.ObjectText, "Lucky Block") then
-			obj.ObjectText = "OG Lucky Block"
-			obj.ActionText = "OG Lucky Block"
-		end
-	end
 end
 
--- Apply Button Logic (safe, no stacking)
-local applied = false
-
 button.MouseButton1Click:Connect(function()
-	if applied then return end
-	applied = true
 
 	for _,v in pairs(game:GetDescendants()) do
 		updateTextFunc(v)
@@ -125,6 +111,7 @@ button.MouseButton1Click:Connect(function()
 	game.DescendantAdded:Connect(function(v)
 		updateTextFunc(v)
 	end)
+
 end)
 
 -- DRAGGABLE
