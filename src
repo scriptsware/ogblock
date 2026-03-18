@@ -91,11 +91,6 @@ local function updateTextFunc(obj)
 			obj.TextColor3 = Color3.fromRGB(255,215,0)
 		end
 
-		if obj.Text == "Lucky Block" then
-			obj.Text = "OG Lucky Block"
-			obj.TextColor3 = Color3.fromRGB(255,255,255)
-		end
-
 	end
 
 end
@@ -159,6 +154,3 @@ UIS.InputChanged:Connect(function(input)
 		update(input)
 	end
 end)
-
-
-
